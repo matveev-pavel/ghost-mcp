@@ -1,0 +1,43 @@
+[project]
+name = "ghost-mcp"
+version = "0.1.0"
+description = "MCP server for Ghost CMS — manage posts, pages, tags and images"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Pavel Matveev" }]
+readme = "README.md"
+keywords = ["mcp", "ghost", "cms", "blog", "ai"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: WWW/HTTP :: Site Management",
+]
+dependencies = [
+    "mcp>=1.0.0",
+    "httpx>=0.27.0",
+    "pyjwt>=2.8.0",
+    "markdown>=3.5.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/pmatveev/ghost-mcp"
+Repository = "https://github.com/pmatveev/ghost-mcp"
+Issues = "https://github.com/pmatveev/ghost-mcp/issues"
+
+[project.optional-dependencies]
+test = ["pytest>=8.0", "pytest-asyncio>=0.24", "respx>=0.22"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+ghost-mcp = "ghost_mcp.__main__:main"

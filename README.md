@@ -1,4 +1,4 @@
-# ghost-mcp
+# ghost-cms-mcp
 
 > **Unofficial** MCP server for [Ghost CMS](https://ghost.org). Not affiliated with Ghost Foundation.
 
@@ -7,13 +7,13 @@ Manage posts, pages, tags and images through any MCP-compatible client (Claude C
 ## Installation
 
 ```bash
-uvx ghost-mcp
+uvx ghost-cms-mcp
 ```
 
 Or install with pip:
 
 ```bash
-pip install ghost-mcp
+pip install ghost-cms-mcp
 ```
 
 ## Configuration
@@ -26,14 +26,21 @@ You need a Ghost Admin API key. Get it from your Ghost Admin panel:
 
 ### Claude Code
 
-Add to your project's `.mcp.json`:
+```bash
+claude mcp add ghost \
+  -e GHOST_URL=https://your-blog.com \
+  -e GHOST_ADMIN_KEY=your-id:your-secret \
+  -- uvx ghost-cms-mcp
+```
+
+Or add to your project's `.mcp.json`:
 
 ```json
 {
   "mcpServers": {
     "ghost": {
       "command": "uvx",
-      "args": ["ghost-mcp"],
+      "args": ["ghost-cms-mcp"],
       "env": {
         "GHOST_URL": "https://your-blog.com",
         "GHOST_ADMIN_KEY": "your-id:your-secret"
@@ -52,7 +59,7 @@ Add to `claude_desktop_config.json`:
   "mcpServers": {
     "ghost": {
       "command": "uvx",
-      "args": ["ghost-mcp"],
+      "args": ["ghost-cms-mcp"],
       "env": {
         "GHOST_URL": "https://your-blog.com",
         "GHOST_ADMIN_KEY": "your-id:your-secret"
@@ -71,7 +78,7 @@ Add to `.cursor/mcp.json` in your project root:
   "mcpServers": {
     "ghost": {
       "command": "uvx",
-      "args": ["ghost-mcp"],
+      "args": ["ghost-cms-mcp"],
       "env": {
         "GHOST_URL": "https://your-blog.com",
         "GHOST_ADMIN_KEY": "your-id:your-secret"
@@ -81,32 +88,74 @@ Add to `.cursor/mcp.json` in your project root:
 }
 ```
 
-### OpenCode
+### CLI
 
-Add to your `opencode.json`:
+```bash
+ghost-cms-mcp --url https://your-blog.com --key "your-id:your-secret"
+```
+
+Environment variables take priority over CLI arguments.
+
+## Tool Selection
+
+By default all tools are enabled. You can control which tools are available using presets or manual selection.
+
+### Presets
+
+| Preset | Tools | Description |
+|--------|-------|-------------|
+| `all` | posts, pages, tags, images | All tools (default) |
+| `writer` | posts, tags, images | For authors: write, tag, upload images |
+| `content` | posts, pages, tags, images | All content tools |
+| `readonly` | posts, pages, tags, images | Only list/get operations, no create/update/delete |
+
+Configure via env variable or CLI argument:
 
 ```json
 {
   "mcpServers": {
     "ghost": {
       "command": "uvx",
-      "args": ["ghost-mcp"],
+      "args": ["ghost-cms-mcp"],
       "env": {
         "GHOST_URL": "https://your-blog.com",
-        "GHOST_ADMIN_KEY": "your-id:your-secret"
+        "GHOST_ADMIN_KEY": "your-id:your-secret",
+        "GHOST_PRESET": "writer"
       }
     }
   }
 }
 ```
 
-### CLI (alternative)
+Or via CLI:
 
 ```bash
-ghost-mcp --url https://your-blog.com --key "your-id:your-secret"
+ghost-cms-mcp --url https://your-blog.com --key "id:secret" --preset readonly
 ```
 
-Environment variables take priority over CLI arguments.
+### Manual tool selection
+
+Enable only specific tool groups:
+
+```json
+{
+  "env": {
+    "GHOST_URL": "https://your-blog.com",
+    "GHOST_ADMIN_KEY": "your-id:your-secret",
+    "GHOST_TOOLS": "posts,tags"
+  }
+}
+```
+
+Or via CLI:
+
+```bash
+ghost-cms-mcp --url https://your-blog.com --key "id:secret" --tools posts,tags
+```
+
+Available groups: `posts`, `pages`, `tags`, `images`
+
+`GHOST_TOOLS` / `--tools` takes priority over `GHOST_PRESET` / `--preset`.
 
 ## Available tools
 
@@ -138,7 +187,7 @@ Environment variables take priority over CLI arguments.
 ## Development
 
 ```bash
-git clone https://github.com/pmatveev/ghost-mcp.git
+git clone https://github.com/matveev-pavel/ghost-mcp.git
 cd ghost-mcp
 uv sync --dev
 uv run pytest

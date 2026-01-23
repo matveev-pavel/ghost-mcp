@@ -11,7 +11,7 @@ VALID_STATUSES = {"all", "published", "draft", "scheduled"}
 TAG_SLUG_RE = re.compile(r"^[a-zA-Z0-9_-]+$")
 
 
-def register_post_tools(mcp: FastMCP, client: GhostClient):
+def register_post_tools(mcp: FastMCP, client: GhostClient, readonly: bool = False):
     """Register tools for working with posts."""
 
     @mcp.tool()
@@ -105,6 +105,9 @@ def register_post_tools(mcp: FastMCP, client: GhostClient):
             lines.append(f"\nHTML content:\n{post['html']}")
 
         return "\n".join(lines)
+
+    if readonly:
+        return
 
     @mcp.tool()
     async def ghost_create_post(

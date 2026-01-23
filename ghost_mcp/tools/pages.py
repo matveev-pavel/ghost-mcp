@@ -8,7 +8,7 @@ from ghost_mcp.converters import markdown_to_html
 VALID_STATUSES = {"all", "published", "draft"}
 
 
-def register_page_tools(mcp: FastMCP, client: GhostClient):
+def register_page_tools(mcp: FastMCP, client: GhostClient, readonly: bool = False):
     """Register tools for working with pages."""
 
     @mcp.tool()
@@ -77,6 +77,9 @@ def register_page_tools(mcp: FastMCP, client: GhostClient):
             lines.append(f"\nHTML content:\n{page['html']}")
 
         return "\n".join(lines)
+
+    if readonly:
+        return
 
     @mcp.tool()
     async def ghost_create_page(

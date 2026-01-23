@@ -10,40 +10,42 @@ ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".ico"}
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 
 
-def register_image_tools(mcp: FastMCP, client: GhostClient):
+def register_image_tools(mcp: FastMCP, client: GhostClient, readonly: bool = False):
     """Register tools for images and site utilities."""
 
-    @mcp.tool()
-    async def ghost_upload_image(file_path: str) -> str:
-        """Upload an image to Ghost and get its URL.
+    if not readonly:
 
-        Args:
-            file_path: Absolute path to the image file
-        """
-        path = Path(file_path).resolve()
+        @mcp.tool()
+        async def ghost_upload_image(file_path: str) -> str:
+            """Upload an image to Ghost and get its URL.
 
-        if not path.exists():
-            return "Error: file not found"
+            Args:
+                file_path: Absolute path to the image file
+            """
+            path = Path(file_path).resolve()
 
-        if path.suffix.lower() not in ALLOWED_EXTENSIONS:
-            return f"Error: unsupported file type '{path.suffix}'. Allowed: {', '.join(sorted(ALLOWED_EXTENSIONS))}"
+            if not path.exists():
+                return "Error: file not found"
 
-        file_size = path.stat().st_size
-        if file_size > MAX_FILE_SIZE:
-            return f"Error: file too large ({file_size // 1024 // 1024}MB). Maximum: {MAX_FILE_SIZE // 1024 // 1024}MB"
+            if path.suffix.lower() not in ALLOWED_EXTENSIONS:
+                return f"Error: unsupported file type '{path.suffix}'. Allowed: {', '.join(sorted(ALLOWED_EXTENSIONS))}"
 
-        import mimetypes
-        mime_type, _ = mimetypes.guess_type(str(path))
-        if not mime_type:
-            mime_type = "application/octet-stream"
+            file_size = path.stat().st_size
+            if file_size > MAX_FILE_SIZE:
+                return f"Error: file too large ({file_size // 1024 // 1024}MB). Maximum: {MAX_FILE_SIZE // 1024 // 1024}MB"
 
-        with path.open("rb") as f:
-            files = {"file": (path.name, f.read(), mime_type)}
+            import mimetypes
+            mime_type, _ = mimetypes.guess_type(str(path))
+            if not mime_type:
+                mime_type = "application/octet-stream"
 
-        result = await client.post("images/upload/", files=files)
-        image_url = result["images"][0]["url"]
+            with path.open("rb") as f:
+                files = {"file": (path.name, f.read(), mime_type)}
 
-        return f"Image uploaded!\nURL: {image_url}"
+            result = await client.post("images/upload/", files=files)
+            image_url = result["images"][0]["url"]
+
+            return f"Image uploaded!\nURL: {image_url}"
 
     @mcp.tool()
     async def ghost_site_info() -> str:

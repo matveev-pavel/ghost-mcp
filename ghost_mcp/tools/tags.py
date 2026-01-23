@@ -5,7 +5,7 @@ from mcp.server.fastmcp import FastMCP
 from ghost_mcp.client import GhostClient
 
 
-def register_tag_tools(mcp: FastMCP, client: GhostClient):
+def register_tag_tools(mcp: FastMCP, client: GhostClient, readonly: bool = False):
     """Register tools for working with tags."""
 
     @mcp.tool()
@@ -25,6 +25,9 @@ def register_tag_tools(mcp: FastMCP, client: GhostClient):
             lines.append(f"- {t['name']} (slug: {t['slug']}, posts: {count}, id: {t['id']})")
 
         return "\n".join(lines)
+
+    if readonly:
+        return
 
     @mcp.tool()
     async def ghost_create_tag(

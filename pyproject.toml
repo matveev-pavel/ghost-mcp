@@ -43,4 +43,4 @@ build-backend = "hatchling.build"
 packages = ["ghost_mcp"]
 
 [project.scripts]
-ghost-mcp = "ghost_mcp.__main__:main"
+ghost-cms-mcp = "ghost_mcp.__main__:main"
